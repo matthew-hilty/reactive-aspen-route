@@ -1,0 +1,21 @@
+{
+  "name": "reactive-aspen-router",
+  "version": "0.0.0",
+  "private": true,
+  "description": "A Reactive-Aspen plugin that manages SPA routes",
+  "main": "lib/index.js",
+  "scripts": {
+    "compile": "cough --no-header -o lib/ -bc src/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "reactive-aspen",
+    "aspen",
+    "router"
+  ],
+  "author": "Matthew Hilty",
+  "license": "MIT",
+  "devDependencies": {
+    "cough-syrup": "0.0.1"
+  }
+}

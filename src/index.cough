@@ -1,0 +1,40 @@
+getRouter = \exportToAspen ->
+  exportEvent = (key) -> () ->
+    capsule =
+      event   : document.location[key]
+      handler : 'onHashChange'
+      label   : 'hash'
+    exportToAspen capsule if isFunction exportToAspen
+
+  getEventHandler = (fn, key) ->
+    return exportEvent key if fn == true
+    return fn if isFunction fn
+
+  isFunction = \val ->
+    typeof val == 'function'
+
+  isOldIE = ->
+    docMode    = document.documentMode
+    isExplorer = /msie [\w.]+/
+
+    isExplorer.exec (navigator.userAgent.toLowerCase ()) &&
+        (!docMode || docMode <= 7)
+
+  Router = \config ->
+    { onHashChange, onPopState } = config
+
+    if onHashChange && supportsHashChange ()
+      window.onhashchange = getEventHandler (onHashChange, 'hash')
+
+    if onPopState && supportsPushState ()
+      window.onpopstate = getEventHandler (onPopState, 'pathname')
+
+  supportsHashChange = ->
+    window.hasOwnProperty 'onhashchange' && ! isOldIE ()
+
+  supportsPushState = ->
+    (history = window.history) && history.pushState
+
+  Router
+
+module.exports = getRouter
