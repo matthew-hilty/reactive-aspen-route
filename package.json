@@ -5,6 +5,7 @@
   "description": "A Reactive-Aspen plugin that manages SPA routes",
   "main": "lib/index.js",
   "scripts": {
+    "build": "npm run compile && cp lib/index.js build/output.js",
     "compile": "cough --no-header -o lib/ -bc src/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
