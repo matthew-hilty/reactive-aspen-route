@@ -1,0 +1,73 @@
+'use strict'
+
+getLegacySupport = \config ->
+  { exportToAspen, getCurrentHashRoute, handler, label, setHash } = config
+
+  cachedRoute        = null
+  checkHashInterval  = null
+  pollingStarted     = false
+
+  checkHash = \iframe -> () ->
+    route = getCurrentHashRoute window
+    console.log ('checkHash cachedRoute: ', cachedRoute, ' route: ', route)
+
+    if isCached route
+      iframeRoute = getCurrentHashRoute iframe
+      navigateAndExport (iframeRoute, iframe) unless isCached iframeRoute
+    else
+      navigateAndExport (route, iframe)
+
+  createIFrame = \route ->
+    iframe               = document.createElement 'iframe'
+    iframe.src           = 'javascript:0'
+    iframe.style.display = 'none'
+    iframe.tabIndex      = -1
+    body                 = document.body
+
+    # Using `appendChild` throws on IE < 9 if the document isn't ready.
+    $iframe = body.insertBefore(iframe, body.firstChild).contentWindow
+    $iframe.document.open().close()
+    setHash (route, $iframe)
+
+    $iframe
+
+  exportHash = ->
+    event = getCurrentHashRoute window
+    console.log ('exportHash event: ', event)
+    exportToAspen { event, handler, label }
+
+  isCached = \route ->
+    route == cachedRoute
+
+  isStale = (route, iframe) ->
+    route == getCurrentHashRoute iframe
+
+  navigateTo = (route, iframe) ->
+    cachedRoute = route
+    setHash (route, window)
+    setIFrameHash (iframe, route) unless isStale (route, iframe)
+
+  navigateAndExport = (route, iframe) ->
+    navigateTo (route, iframe)
+    exportHash ()
+
+  setIFrameHash = (iframe, route) ->
+    # Opening and closing the iframe tricks IE < 7 to push a history entry.
+    iframe.document.open().close()
+    setHash (route, iframe)
+
+  startPolling = \iframe ->
+    checkHashInterval = setInterval ((checkHash iframe), interval)
+    pollingStarted    = true
+
+  useIFrameAndPolling = ->
+    unless pollingStarted
+      cachedRoute = getCurrentHashRoute window
+      iframe      = createIFrame cachedRoute
+      startPolling iframe
+
+  interval = 50
+
+  return useIFrameAndPolling
+
+module.exports = getLegacySupport
