@@ -5,7 +5,8 @@
   "description": "A Reactive-Aspen plugin that manages SPA routes",
   "main": "lib/index.js",
   "scripts": {
-    "build": "npm run compile && cp lib/index.js build/output.js",
+    "build": "npm run compile & npm run bundle",
+    "bundle": "browserify -t coughify --extension='.cough' -s ReactiveAspenRoute src/index.cough | derequire > build/output.js",
     "compile": "cough --no-header -o lib/ -bc src/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,6 +18,9 @@
   "author": "Matthew Hilty",
   "license": "MIT",
   "devDependencies": {
-    "cough-syrup": "0.0.1"
+    "browserify": "^8.1.3",
+    "cough-syrup": "0.0.1",
+    "coughify": "0.0.0",
+    "derequire": "^1.2.1"
   }
 }
