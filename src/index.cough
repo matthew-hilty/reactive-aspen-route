@@ -4,7 +4,7 @@ getRouteElement = \exportToAspen ->
   return (->) unless ? window
 
   changeRouteToHash = \route ->
-    hashPrefix + route
+    '#' + route
 
   exportEvent = \key \event ->
     if isFunction exportToAspen
@@ -17,7 +17,7 @@ getRouteElement = \exportToAspen ->
   # Gets the true hash value. Cannot use `location.hash` directly due
   # to bug in Firefox where `location.hash` will always be decoded.
   getCurrentHashRoute = \window ->
-    match = window.location.href.match hashRegex
+    match = window.location.href.match /#(.*)$/
     if match then match[1] else ''
 
   getEventHandler = (fn, key) ->
@@ -48,13 +48,13 @@ getRouteElement = \exportToAspen ->
     event && event.state
 
   isString = \val ->
-    ObjProto.toString.call val == stringIdentifier
+    Object.prototype.toString.call val == '[object String]'
 
   isViableHash = \route ->
     isString route && route != getCurrentHashRoute window
 
   isViablePath = \route ->
-    isString route && route != location.pathname
+    isString route && route != window.location.pathname
 
   manageHashRouting = (route, hashHandler) ->
     if isViableHash route
@@ -85,7 +85,7 @@ getRouteElement = \exportToAspen ->
       useIFrameAndPolling ()
 
   setPath = \path ->
-    history.pushState (path, title, path)
+    history.pushState (path, document.title, path)
 
   setPathHandler = \pathHandler ->
     window.onpopstate = getEventHandler (pathHandler, 'pathname')
@@ -96,16 +96,10 @@ getRouteElement = \exportToAspen ->
     useIFrameAndPolling ()
 
   handlers           = { hash: 'onHashChange', pathname: 'onPathChange' }
-  hashPrefix         = '#'
-  hashRegex          = /#(.*)$/
   history            = window.history
   labels             = { hash: 'Hash', pathname: 'Path' }
-  location           = document.location
-  ObjProto           = Object.prototype
-  stringIdentifier   = '[object String]'
   supportsHashChange = !! ('onhashchange' of window)
   supportsPushState  = !! (history && history.pushState)
-  title              = document.title
 
   return Route
 
