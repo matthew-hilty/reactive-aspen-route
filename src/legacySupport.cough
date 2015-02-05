@@ -9,8 +9,6 @@ getLegacySupport = \config ->
 
   checkHash = \iframe -> () ->
     route = getCurrentHashRoute window
-    console.log ('checkHash cachedRoute: ', cachedRoute, ' route: ', route)
-
     if isCached route
       iframeRoute = getCurrentHashRoute iframe
       navigateAndExport (iframeRoute, iframe) unless isCached iframeRoute
@@ -32,9 +30,7 @@ getLegacySupport = \config ->
     $iframe
 
   exportHash = ->
-    event = getCurrentHashRoute window
-    console.log ('exportHash event: ', event)
-    exportToAspen { event, handler, label }
+    exportToAspen { event: getCurrentHashRoute window, handler, label }
 
   isCached = \route ->
     route == cachedRoute
