@@ -3,12 +3,12 @@
 var getRouteElement;
 
 getRouteElement = function(exportToAspen) {
-  var ObjProto, Route, changeRouteToHash, exportEvent, getCurrentHashRoute, getEventHandler, getEventValue, getLegacyConfig, handlers, hashPrefix, hashRegex, history, isFunction, isPopStateEvent, isString, isViableHash, isViablePath, labels, location, manageHashRouting, managePathRouting, refusesHashRouting, setHash, setHashMonitoring, setPath, setPathHandler, stringIdentifier, supportsHashChange, supportsPushState, title, useIFrameAndPolling;
+  var Route, changeRouteToHash, exportEvent, getCurrentHashRoute, getEventHandler, getEventValue, getLegacyConfig, handlers, history, isFunction, isPopStateEvent, isString, isViableHash, isViablePath, labels, manageHashRouting, managePathRouting, refusesHashRouting, setHash, setHashMonitoring, setPath, setPathHandler, supportsHashChange, supportsPushState, useIFrameAndPolling;
   if (typeof window === "undefined" || window === null) {
     return (function() {});
   }
   changeRouteToHash = function(route) {
-    return hashPrefix + route;
+    return '#' + route;
   };
   exportEvent = function(key) {
     return function(event) {
@@ -25,7 +25,7 @@ getRouteElement = function(exportToAspen) {
   };
   getCurrentHashRoute = function(window) {
     var match;
-    match = window.location.href.match(hashRegex);
+    match = window.location.href.match(/#(.*)$/);
     if (match) {
       return match[1];
     } else {
@@ -65,13 +65,13 @@ getRouteElement = function(exportToAspen) {
     return event && event.state;
   };
   isString = function(val) {
-    return ObjProto.toString.call(val) === stringIdentifier;
+    return Object.prototype.toString.call(val) === '[object String]';
   };
   isViableHash = function(route) {
     return isString(route) && route !== getCurrentHashRoute(window);
   };
   isViablePath = function(route) {
-    return isString(route) && route !== location.pathname;
+    return isString(route) && route !== window.location.pathname;
   };
   manageHashRouting = function(route, hashHandler) {
     if (isViableHash(route)) {
@@ -110,7 +110,7 @@ getRouteElement = function(exportToAspen) {
     }
   };
   setPath = function(path) {
-    return history.pushState(path, title, path);
+    return history.pushState(path, document.title, path);
   };
   setPathHandler = function(pathHandler) {
     return window.onpopstate = getEventHandler(pathHandler, 'pathname');
@@ -125,19 +125,13 @@ getRouteElement = function(exportToAspen) {
     hash: 'onHashChange',
     pathname: 'onPathChange'
   };
-  hashPrefix = '#';
-  hashRegex = /#(.*)$/;
   history = window.history;
   labels = {
     hash: 'Hash',
     pathname: 'Path'
   };
-  location = document.location;
-  ObjProto = Object.prototype;
-  stringIdentifier = '[object String]';
   supportsHashChange = !!('onhashchange' in window);
   supportsPushState = !!(history && history.pushState);
-  title = document.title;
   return Route;
 };
 
@@ -159,7 +153,6 @@ getLegacySupport = function(config) {
     return function() {
       var iframeRoute, route;
       route = getCurrentHashRoute(window);
-      console.log('checkHash cachedRoute: ', cachedRoute, ' route: ', route);
       if (isCached(route)) {
         iframeRoute = getCurrentHashRoute(iframe);
         if (!isCached(iframeRoute)) {
@@ -183,13 +176,8 @@ getLegacySupport = function(config) {
     return $iframe;
   };
   exportHash = function() {
-    var event;
-    event = getCurrentHashRoute(window);
-    console.log('exportHash event: ', event);
     return exportToAspen({
-      event: event,
-      handler: handler,
-      label: label
+      event: getCurrentHashRoute(window, handler, label)
     });
   };
   isCached = function(route) {
