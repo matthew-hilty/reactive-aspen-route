@@ -1,6 +1,6 @@
 {
   "name": "reactive-aspen-route",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A Reactive-Aspen plugin that modifies and monitors SPA routes",
   "main": "lib/index.js",
   "scripts": {
