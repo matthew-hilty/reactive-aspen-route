@@ -9,7 +9,7 @@
     "compile": "cough --no-header -o lib/ -bc src/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "respository": {
+  "repository": {
     "type": "git",
     "url": "https://github.com/matthew-hilty/reactive-aspen-route.git"
   },
